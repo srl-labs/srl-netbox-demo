@@ -1,0 +1,131 @@
+# This Containerlab configuration, 'lab01', sets up a network simulation environment with spine and leaf switches.
+# The key component is Netbox, which manages the network inventory. Netbox waits for its dependencies (PostgreSQL and Redis)
+# to be ready, then initializes and creates an admin user. A script imports Nokia device types into Netbox, 
+# and another script creates a network fabric using these devices. This setup provides a comprehensive
+# and automated approach to network infrastructure management in a virtual lab environment.
+
+name: lab01
+prefix: ""
+mgmt:
+  network: containerlab-mgmt
+  bridge: lab01
+  ipv4-subnet: 172.20.127.0/24
+
+topology:
+  kinds:
+    srl:
+      image: ghcr.io/nokia/srlinux:23.3.1
+
+  nodes:
+    ## SPINES ###
+    lab01-spine1:
+      kind: srl
+      type: ixrd3l
+      mgmt-ipv4: 172.20.127.2
+
+    lab01-spine2:
+      kind: srl
+      type: ixrd3l
+      mgmt-ipv4: 172.20.127.3
+
+    ### LEAFS ###
+    lab01-leaf1:
+      kind: srl
+      type: ixrd2l
+      mgmt-ipv4: 172.20.127.4
+    lab01-leaf2:
+      kind: srl
+      type: ixrd2l
+      mgmt-ipv4: 172.20.127.5
+    lab01-leaf3:
+      kind: srl
+      type: ixrd2l
+      mgmt-ipv4: 172.20.127.6
+
+    ### Netbox ###
+    # Configuration for PostgreSQL, Redis, and Netbox for network inventory management
+    postgres:
+      kind: linux
+      image: docker.io/postgres:16-alpine
+      env:
+        POSTGRES_DB: netbox
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+
+    redis:
+      kind: linux
+      image: docker.io/redis:7-alpine
+
+    netbox:
+      # Netbox configuration with dependencies on postgres and redis
+      kind: linux
+      image: lscr.io/linuxserver/netbox:3.7.1
+      env:
+        PUID: 0
+        PGID: 0
+        TZ: Etc/UTC
+        SKIP_SUPERUSER: false
+        SUPERUSER_EMAIL: admin@admin.com
+        SUPERUSER_NAME: admin
+        SUPERUSER_PASSWORD: admin
+        SUPERUSER_API_TOKEN: c4cd2e9bf74869feb061eba14b090b4811353d9c
+        ALLOWED_HOST: "*"
+        DEBUG: true
+        DB_NAME: netbox
+        DB_USER: postgres
+        DB_PASSWORD: postgres
+        DB_HOST: postgres
+        DB_PORT: 5432
+        REDIS_HOST: redis
+        REDIS_PORT: 6379
+      ports:
+        - 8000:8000
+      healthcheck:
+        test: ["CMD-SHELL", "curl -f http://netbox:8000/api/ || exit 1"]
+        timeout: 10
+        retries: 100
+      stages:
+        create:
+          wait-for:
+            - node: postgres
+              stage: create
+            - node: redis
+              stage: create
+        healthy:
+         exec:
+           on-exit:
+            - sh -c "echo \"from django.contrib.auth.models import User; from users.models import Token; User.objects.get(username='admin').tokens.create(key='c4cd2e9bf74869feb061eba14b090b4811353d9c')\" | /app/netbox/netbox/manage.py shell --interface python"
+      binds:
+        - config/configuration.py:/config/configuration.py
+        - nokia-srl-netbox-scripts:/config/scripts
+
+
+    netbox_importer:
+      kind: linux
+      image: flosch62/netbox-importer:latest
+      env:
+        REPO_URL: https://github.com/netbox-community/devicetype-library.git
+        NETBOX_URL: http://netbox:8000
+        NETBOX_TOKEN: c4cd2e9bf74869feb061eba14b090b4811353d9c
+        IGNORE_SSL_ERRORS: False
+      #  https_proxy: http://10.158.100.1:8080
+      entrypoint: ./nb-dt-import.py --vendors Nokia
+      healthcheck:
+        test: ["CMD-SHELL", "test $(curl -f -H 'Authorization: Token c4cd2e9bf74869feb061eba14b090b4811353d9c' http://netbox:8000/api/dcim/device-types/ | jq '.count') -ge 12"]
+        timeout: 10
+        retries: 10
+      stages:
+        create:
+          wait-for:
+            - node: netbox
+              stage: healthy
+
+
+  links:
+    - endpoints: ["lab01-spine1:e1-1", "lab01-leaf1:e1-49"]
+    - endpoints: ["lab01-spine1:e1-2", "lab01-leaf2:e1-49"]
+    - endpoints: ["lab01-spine1:e1-3", "lab01-leaf3:e1-49"]
+    - endpoints: ["lab01-spine2:e1-1", "lab01-leaf1:e1-50"]
+    - endpoints: ["lab01-spine2:e1-2", "lab01-leaf2:e1-50"]
+    - endpoints: ["lab01-spine2:e1-3", "lab01-leaf3:e1-50"]
+

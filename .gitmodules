@@ -1,0 +1,7 @@
+[submodule "nokia-srl-netbox-scripts"]
+	path = nokia-srl-netbox-scripts
+	url = https://github.com/FloSch62/nokia-srl-netbox-scripts
+[submodule "intent-based-ansible-lab"]
+	path = intent-based-ansible-lab
+	url = https://github.com/srl-labs/intent-based-ansible-lab/
+	branch = netbox_integration_example

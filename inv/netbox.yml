@@ -1,0 +1,21 @@
+plugin: netbox.netbox.nb_inventory
+api_endpoint: http://netbox:8000/
+token: c4cd2e9bf74869feb061eba14b090b4811353d9c
+validate_certs: False
+interfaces: True
+config_context: True
+flatten_config_context: True
+query_filters:
+  - role: leaf
+  - role: spine
+  - role: borderleaf
+  - role: superspine
+  - role: dcgw
+  - platform: sros
+  - platform: srl
+device_query_filters:
+  - location_id: 2
+group_names_raw: True
+group_by:
+  - device_roles
+  - platforms

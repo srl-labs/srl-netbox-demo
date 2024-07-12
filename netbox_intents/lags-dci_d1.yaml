@@ -1,0 +1,44 @@
+lags:
+  - name: lag1
+    mh_id: 1
+    mh_mode: all-active
+    devices:
+      - name: dc1-l1
+        interfaces:
+          - name: ethernet-1/1
+      - name: dc1-l2
+        interfaces:
+          - name: ethernet-1/1
+
+  - name: lag2
+    mh_id: 2
+    mh_mode: all-active
+    devices:
+      - name: dc1-l1
+        interfaces:
+          - name: ethernet-1/2
+      - name: dc1-l2
+        interfaces:
+          - name: ethernet-1/2
+
+  - name: lag3
+    mh_id: 3
+    mh_mode: all-active
+    devices:
+      - name: dc1-l3
+        interfaces:
+          - name: ethernet-1/1
+      - name: dc1-l4
+        interfaces:
+          - name: ethernet-1/1
+
+  - name: lag4
+    mh_id: 4
+    mh_mode: all-active
+    devices:
+      - name: dc1-l3
+        interfaces:
+          - name: ethernet-1/2
+      - name: dc1-l4
+        interfaces:
+          - name: ethernet-1/2

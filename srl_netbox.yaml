@@ -99,7 +99,6 @@ topology:
         - config/configuration.py:/config/configuration.py
         - nokia-srl-netbox-scripts:/config/scripts
 
-
     netbox_importer:
       kind: linux
       image: flosch62/netbox-importer:latest
@@ -119,7 +118,6 @@ topology:
           wait-for:
             - node: netbox
               stage: healthy
-
 
   links:
     - endpoints: ["lab01-spine1:e1-1", "lab01-leaf1:e1-49"]

@@ -63,7 +63,7 @@ topology:
     netbox:
       # Netbox configuration with dependencies on postgres and redis
       kind: linux
-      image: lscr.io/linuxserver/netbox:3.7.1
+      image: lscr.io/linuxserver/netbox:3.6.9
       env:
         PUID: 0
         PGID: 0
@@ -131,4 +131,4 @@ topology:
     - endpoints: ["lab01-spine2:e1-1", "lab01-leaf1:e1-50"]
     - endpoints: ["lab01-spine2:e1-2", "lab01-leaf2:e1-50"]
     - endpoints: ["lab01-spine2:e1-3", "lab01-leaf3:e1-50"]
-    - endpoints: ["lab01-spine1:e1-4", "lab01-leaf4:e1-50"]
+    - endpoints: ["lab01-spine2:e1-4", "lab01-leaf4:e1-50"]

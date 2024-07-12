@@ -10,18 +10,18 @@ l2vpns:
     ipvrf: dc1-ipvrf-2001
     ipvrf_gateway: 10.20.1.254/24
     devices:
-      - device_name: dc1-l1
+      - device_name: lab01-leaf1
         interfaces:
           - lag1
-      - device_name: dc1-l2
+      - device_name: lab01-leaf2
         interfaces:
           - lag1
-      - device_name: dc1-l3
-        interfaces:
-          - lag3
-      - device_name: dc1-l4
-        interfaces:
-          - lag3
+      # - device_name: lab01-leaf3
+      #   interfaces:
+      #     - lag3
+      # - device_name: lab01-leaf4
+      #   interfaces:
+      #     - lag3
 
   - name: dc1-macvrf-202
     identifier: 202
@@ -34,120 +34,17 @@ l2vpns:
     ipvrf: dc1-ipvrf-2001
     ipvrf_gateway: 10.20.2.254/24
     devices:
-      - device_name: dc1-l1
-        interfaces:
-          - lag2
-      - device_name: dc1-l2
-        interfaces:
-          - lag2
-      - device_name: dc1-l3
-        interfaces:
-          - lag4
-      - device_name: dc1-l4
+      # - device_name: lab01-leaf1
+      #   interfaces:
+      #     - lag2
+      # - device_name: lab01-leaf2
+      #   interfaces:
+      #     - lag2
+      - device_name: lab01-leaf3
         interfaces:
           - lag4
-
-  - name: dc1-macvrf-1001
-    identifier: 1001
-    import_target: 100:1001
-    export_target: 100:1001
-    vlan: 1001
-    location: DC1
-    tenant: "svc:dc1 local macvrf"
-    commissioning_state: Commissioned
-    ipvrf: ""
-    ipvrf_gateway: ""
-    devices:
-      - device_name: dc1-l1
+      - device_name: lab01-leaf4
         interfaces:
-          - lag1
-          - lag2
-      - device_name: dc1-l2
-        interfaces:
-          - lag1
-          - lag2
-      - device_name: dc1-l3
-        interfaces:
-          - lag3
-          - lag4
-      - device_name: dc1-l4
-        interfaces:
-          - lag3
           - lag4
 
 
-  - name: dc2-macvrf-201
-    identifier: 201
-    import_target: 100:201
-    export_target: 100:201
-    vlan: 201
-    location: DC2
-    tenant: ""
-    commissioning_state: Planned
-    ipvrf: dc2-ipvrf-2001
-    ipvrf_gateway: 10.20.1.254/24
-    devices:
-      - device_name: dc2-l1
-        interfaces:
-          - lag1
-      - device_name: dc2-l2
-        interfaces:
-          - lag1
-      - device_name: dc2-l3
-        interfaces:
-          - lag3
-      - device_name: dc2-l4
-        interfaces:
-          - lag3
-
-  - name: dc2-macvrf-202
-    identifier: 202
-    import_target: 100:202
-    export_target: 100:202
-    vlan: 202
-    location: DC2
-    tenant: "svc:dci usecase"
-    commissioning_state: Commissioned
-    ipvrf: dc2-ipvrf-2001
-    ipvrf_gateway: 10.20.2.254/24
-    devices:
-      - device_name: dc2-l1
-        interfaces:
-          - lag2
-      - device_name: dc2-l2
-        interfaces:
-          - lag2
-      - device_name: dc2-l3
-        interfaces:
-          - lag4
-      - device_name: dc2-l4
-        interfaces:
-          - lag4
-
-  - name: dc2-macvrf-1001
-    identifier: 1001
-    import_target: 100:1001
-    export_target: 100:1001
-    vlan: 1001
-    location: DC2
-    tenant: "svc:dc2 local macvrf"
-    commissioning_state: Commissioned
-    ipvrf: ""
-    ipvrf_gateway: ""
-    devices:
-      - device_name: dc2-l1
-        interfaces:
-          - lag1
-          - lag2
-      - device_name: dc2-l2
-        interfaces:
-          - lag1
-          - lag2
-      - device_name: dc2-l3
-        interfaces:
-          - lag3
-          - lag4
-      - device_name: dc2-l4
-        interfaces:
-          - lag3
-          - lag4

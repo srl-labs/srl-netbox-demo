@@ -3,10 +3,10 @@ lags:
     mh_id: 1
     mh_mode: all-active
     devices:
-      - name: dc1-l1
+      - name: lab01-leaf1
         interfaces:
           - name: ethernet-1/1
-      - name: dc1-l2
+      - name: lab01-leaf2
         interfaces:
           - name: ethernet-1/1
 
@@ -14,10 +14,10 @@ lags:
     mh_id: 2
     mh_mode: all-active
     devices:
-      - name: dc1-l1
+      - name: lab01-leaf1
         interfaces:
           - name: ethernet-1/2
-      - name: dc1-l2
+      - name: lab01-leaf2
         interfaces:
           - name: ethernet-1/2
 
@@ -25,10 +25,10 @@ lags:
     mh_id: 3
     mh_mode: all-active
     devices:
-      - name: dc1-l3
+      - name: lab01-leaf3
         interfaces:
           - name: ethernet-1/1
-      - name: dc1-l4
+      - name: lab01-leaf4
         interfaces:
           - name: ethernet-1/1
 
@@ -36,9 +36,9 @@ lags:
     mh_id: 4
     mh_mode: all-active
     devices:
-      - name: dc1-l3
+      - name: lab01-leaf3
         interfaces:
           - name: ethernet-1/2
-      - name: dc1-l4
+      - name: lab01-leaf4
         interfaces:
           - name: ethernet-1/2

@@ -10,18 +10,12 @@ l2vpns:
     ipvrf: dc1-ipvrf-2001
     ipvrf_gateway: 10.20.1.254/24
     devices:
-      - device_name: lab01-leaf1
+      - device_name: lab01-l1
         interfaces:
           - lag1
-      - device_name: lab01-leaf2
+      - device_name: lab01-l2
         interfaces:
           - lag1
-      # - device_name: lab01-leaf3
-      #   interfaces:
-      #     - lag3
-      # - device_name: lab01-leaf4
-      #   interfaces:
-      #     - lag3
 
   - name: dc1-macvrf-202
     identifier: 202
@@ -29,22 +23,16 @@ l2vpns:
     export_target: 100:202
     vlan: 202
     location: DC1
-    tenant: ""
-    commissioning_state: Planned
+    tenant: "svc:dci usecase"
+    commissioning_state: Commissioned
     ipvrf: dc1-ipvrf-2001
     ipvrf_gateway: 10.20.2.254/24
     devices:
-      # - device_name: lab01-leaf1
-      #   interfaces:
-      #     - lag2
-      # - device_name: lab01-leaf2
-      #   interfaces:
-      #     - lag2
-      - device_name: lab01-leaf3
+      - device_name: lab01-l3
         interfaces:
-          - lag4
-      - device_name: lab01-leaf4
+          - lag2
+      - device_name: lab01-l4
         interfaces:
-          - lag4
+          - lag2
 
 

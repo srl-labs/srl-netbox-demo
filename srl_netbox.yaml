@@ -9,42 +9,96 @@ prefix: ""
 mgmt:
   network: containerlab-mgmt
   bridge: lab01
-  ipv4-subnet: 172.20.127.0/24
+  ipv4-subnet: 172.20.21.0/24
 
 topology:
   kinds:
     srl:
-      image: ghcr.io/nokia/srlinux:23.3.1
+      image: ghcr.io/nokia/srlinux:24.3.2
+    linux:
+      image: ghcr.io/hellt/network-multitool
 
   nodes:
     ## SPINES ###
-    lab01-spine1:
+
+    lab01-l1:
+      kind: srl
+      type: ixrd2
+      mgmt-ipv4: 172.20.21.11
+      labels:
+        role: leaf
+        fabric: yes
+    lab01-l2:
+      kind: srl
+      type: ixrd2
+      mgmt-ipv4: 172.20.21.12
+      labels:
+        role: leaf
+        fabric: yes
+    lab01-l3:
+      kind: srl
+      type: ixrd2
+      mgmt-ipv4: 172.20.21.13
+      labels:
+        role: leaf
+        fabric: yes
+    lab01-l4:
+      kind: srl
+      type: ixrd2
+      mgmt-ipv4: 172.20.21.14
+      labels:
+        role: leaf
+        fabric: yes
+    lab01-s1:
       kind: srl
       type: ixrd3l
-      mgmt-ipv4: 172.20.127.2
-
-    lab01-spine2:
+#      type: ixrh2
+      mgmt-ipv4: 172.20.21.101
+      labels:
+        role: spine
+        fabric: yes
+    lab01-s2:
       kind: srl
       type: ixrd3l
-      mgmt-ipv4: 172.20.127.3
+      #type: ixrh2
+      mgmt-ipv4: 172.20.21.102
+      labels:
+        role: spine
+        fabric: yes
 
-    ### LEAFS ###
-    lab01-leaf1:
-      kind: srl
-      type: ixrd2l
-      mgmt-ipv4: 172.20.127.4
-    lab01-leaf2:
-      kind: srl
-      type: ixrd2l
-      mgmt-ipv4: 172.20.127.5
-    lab01-leaf3:
-      kind: srl
-      type: ixrd2l
-      mgmt-ipv4: 172.20.127.6
-    lab01-leaf4:
-      kind: srl
-      type: ixrd2l
-      mgmt-ipv4: 172.20.127.7
+    lab01-client1:
+      kind: linux
+      mgmt-ipv4: 172.20.21.133
+      exec:
+        - ip link add bond0 type bond mode 802.3ad
+        - ip link set addr 00:c1:ab:00:01:21 dev bond0
+        - ip link add link bond0 name bond0.201 type vlan id 201
+        - ip addr add 10.20.1.2/24 dev bond0.201
+        - ip link set eth1 down
+        - ip link set eth2 down
+        - ip link set eth1 master bond0
+        - ip link set eth2 master bond0
+        - ip link set eth1 up
+        - ip link set eth2 up
+        - ip link set bond0 up
+        - ip route add 10.20.2.0/24 via 10.20.1.254
+    lab01-client2:
+      kind: linux
+      mgmt-ipv4: 172.20.21.134
+      exec:
+        - ip link add bond0 type bond mode 802.3ad
+        - ip link set addr 00:c1:ab:00:01:22 dev bond0
+        - ip link add link bond0 name bond0.202 type vlan id 202
+        - ip addr add 10.20.2.2/24 dev bond0.202
+        - ip link set eth1 down
+        - ip link set eth2 down
+        - ip link set eth1 master bond0
+        - ip link set eth2 master bond0
+        - ip link set eth1 up
+        - ip link set eth2 up
+        - ip link set bond0 up
+        - ip route add 10.20.1.0/24 via 10.20.2.254
+    
 
     ### Netbox ###
     # Configuration for PostgreSQL, Redis, and Netbox for network inventory management
@@ -122,13 +176,21 @@ topology:
           wait-for:
             - node: netbox
               stage: healthy
+        healthy:
+         exec:
+           on-exit:
+            - sh -c "echo test"
 
   links:
-    - endpoints: ["lab01-spine1:e1-1", "lab01-leaf1:e1-49"]
-    - endpoints: ["lab01-spine1:e1-2", "lab01-leaf2:e1-49"]
-    - endpoints: ["lab01-spine1:e1-3", "lab01-leaf3:e1-49"]
-    - endpoints: ["lab01-spine1:e1-4", "lab01-leaf4:e1-49"]
-    - endpoints: ["lab01-spine2:e1-1", "lab01-leaf1:e1-50"]
-    - endpoints: ["lab01-spine2:e1-2", "lab01-leaf2:e1-50"]
-    - endpoints: ["lab01-spine2:e1-3", "lab01-leaf3:e1-50"]
-    - endpoints: ["lab01-spine2:e1-4", "lab01-leaf4:e1-50"]
+    - endpoints: ["lab01-l1:e1-50", "lab01-s1:e1-1"]
+    - endpoints: ["lab01-l1:e1-49", "lab01-s2:e1-1"]
+    - endpoints: ["lab01-l2:e1-50", "lab01-s1:e1-2"]
+    - endpoints: ["lab01-l2:e1-49", "lab01-s2:e1-2"]
+    - endpoints: ["lab01-l3:e1-50", "lab01-s1:e1-3"]
+    - endpoints: ["lab01-l3:e1-49", "lab01-s2:e1-3"]
+    - endpoints: ["lab01-l4:e1-50", "lab01-s1:e1-4"]
+    - endpoints: ["lab01-l4:e1-49", "lab01-s2:e1-4"]
+    - endpoints: ["lab01-client1:eth1", "lab01-l1:e1-1"]
+    - endpoints: ["lab01-client1:eth2", "lab01-l2:e1-1"]
+    - endpoints: ["lab01-client2:eth1", "lab01-l3:e1-1"]
+    - endpoints: ["lab01-client2:eth2", "lab01-l4:e1-1"]

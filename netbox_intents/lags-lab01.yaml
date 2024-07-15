@@ -1,0 +1,22 @@
+lags:
+  - name: lag1
+    mh_id: 1
+    mh_mode: all-active
+    devices:
+      - name: lab01-l1
+        interfaces:
+          - name: ethernet-1/1
+      - name: lab01-l2
+        interfaces:
+          - name: ethernet-1/1
+
+  - name: lag2
+    mh_id: 2
+    mh_mode: all-active
+    devices:
+      - name: lab01-l3
+        interfaces:
+          - name: ethernet-1/1
+      - name: lab01-l4
+        interfaces:
+          - name: ethernet-1/1

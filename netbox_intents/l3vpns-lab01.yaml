@@ -1,0 +1,18 @@
+vrfs:
+  - name: dc1_wansvc_8888
+    identifier: 2001
+    import_target: 64678:8888
+    export_target: 64678:8888
+    location: DC1
+    tenant: "svc:dci usecase"
+    commissioning_state: Commissioned
+    wan_vrf: ""
+
+  - name: dc1-ipvrf-2001
+    identifier: 2001
+    import_target: 100:2001
+    export_target: 100:2001
+    location: DC1
+    tenant: "svc:dci usecase"
+    commissioning_state: Commissioned
+    wan_vrf: dc1_wansvc_8888

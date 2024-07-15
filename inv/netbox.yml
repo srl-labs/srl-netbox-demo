@@ -14,7 +14,7 @@ query_filters:
   - platform: sros
   - platform: srl
 device_query_filters:
-  - location_id: 2
+  - location_id: 1
 group_names_raw: True
 group_by:
   - device_roles

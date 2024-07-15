@@ -26,16 +26,23 @@ containerlab deploy -t srl_netbox.yaml
 ### 2. Access your Netbox
 After ensuring all containers are running, you can access the Netbox gui via your http://hostip:8000 with the credentials admin:admin
 
-### 3. Create netbox objects:
+### 3. Init:
 
 ```bash
-ansible-playbook -i inv/ -e intent_dir=/workspaces/srl-netbox-demo/generated_intents --diff playbooks/netbox_generate_intents.yml -t services
+bash api_scripts/import_infra.sh
+bash api_scripts/import_service.sh
 ```
 
 ### 4. Generate Ansible intents from netbox:
 
 ```bash
 ansible-playbook -i inv/ -e intent_dir=/workspaces/srl-netbox-demo/generated_intents --diff playbooks/netbox_generate_intents.yml -t services
+```
+
+### 5. Deploy generated intents:
+
+```bash
+ansible-playbook -i inv -e intent_dir=/root/projects/srl-netbox-demo/ansible_intents --diff intent-based-ansible-lab/playbooks/cf_fabric.yml
 ```
 
 ## Topology Overview

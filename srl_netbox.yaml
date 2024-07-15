@@ -7,7 +7,7 @@
 name: lab01
 prefix: ""
 mgmt:
-  network: containerlab-mgmt
+  network: lab01
   bridge: lab01
   ipv4-subnet: 172.20.21.0/24
 
@@ -19,8 +19,6 @@ topology:
       image: ghcr.io/hellt/network-multitool
 
   nodes:
-    ## SPINES ###
-
     lab01-l1:
       kind: srl
       type: ixrd2
@@ -52,7 +50,6 @@ topology:
     lab01-s1:
       kind: srl
       type: ixrd3l
-#      type: ixrh2
       mgmt-ipv4: 172.20.21.101
       labels:
         role: spine
@@ -60,7 +57,6 @@ topology:
     lab01-s2:
       kind: srl
       type: ixrd3l
-      #type: ixrh2
       mgmt-ipv4: 172.20.21.102
       labels:
         role: spine
@@ -99,7 +95,6 @@ topology:
         - ip link set bond0 up
         - ip route add 10.20.1.0/24 via 10.20.2.254
     
-
     ### Netbox ###
     # Configuration for PostgreSQL, Redis, and Netbox for network inventory management
     postgres:

@@ -1,8 +1,6 @@
 # This Containerlab configuration, 'lab01', sets up a network simulation environment with spine and leaf switches.
 # The key component is Netbox, which manages the network inventory. Netbox waits for its dependencies (PostgreSQL and Redis)
-# to be ready, then initializes and creates an admin user. A script imports Nokia device types into Netbox, 
-# and another script creates a network fabric using these devices. This setup provides a comprehensive
-# and automated approach to network infrastructure management in a virtual lab environment.
+# to be ready, then initializes and creates an admin user. 
 
 name: lab01
 prefix: ""
@@ -24,47 +22,55 @@ topology:
       type: ixrd2
       mgmt-ipv4: 172.20.21.11
       labels:
-        role: leaf
-        fabric: yes
+        graph-level: 2
+        graph-icon: switch
+
     lab01-l2:
       kind: srl
       type: ixrd2
       mgmt-ipv4: 172.20.21.12
       labels:
-        role: leaf
-        fabric: yes
+        graph-level: 2
+        graph-icon: switch
+
     lab01-l3:
       kind: srl
       type: ixrd2
       mgmt-ipv4: 172.20.21.13
       labels:
-        role: leaf
-        fabric: yes
+        graph-level: 2
+        graph-icon: switch
+
     lab01-l4:
       kind: srl
       type: ixrd2
       mgmt-ipv4: 172.20.21.14
       labels:
-        role: leaf
-        fabric: yes
+        graph-level: 2
+        graph-icon: switch
+
     lab01-s1:
       kind: srl
       type: ixrd3l
       mgmt-ipv4: 172.20.21.101
       labels:
-        role: spine
-        fabric: yes
+        graph-level: 1
+        graph-icon: switch
+
     lab01-s2:
       kind: srl
       type: ixrd3l
       mgmt-ipv4: 172.20.21.102
       labels:
-        role: spine
-        fabric: yes
+        graph-level: 1
+        graph-icon: switch
 
     lab01-client1:
       kind: linux
       mgmt-ipv4: 172.20.21.133
+      labels:
+        graph-level: 3 
+        graph-icon: host 
       exec:
         - ip link add bond0 type bond mode 802.3ad
         - ip link set addr 00:c1:ab:00:01:21 dev bond0
@@ -81,6 +87,9 @@ topology:
     lab01-client2:
       kind: linux
       mgmt-ipv4: 172.20.21.134
+      labels:
+        graph-level: 3 
+        graph-icon: host 
       exec:
         - ip link add bond0 type bond mode 802.3ad
         - ip link set addr 00:c1:ab:00:01:22 dev bond0

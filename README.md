@@ -72,7 +72,7 @@ Execute the Ansible playbook below to generate intents based on the data stored 
 
 
 ```bash
-ansible-playbook -i inv/ -e intent_dir=/workspaces/srl-netbox-demo/generated_intents --diff playbooks/netbox_generate_intents.yml -t services
+ansible-playbook -i inv/ -e intent_dir=/workspaces/srl-netbox-demo/intents/ansible_intents --diff intent-based-ansible-lab/playbooks/netbox_generate_intents.yml -t services
 ```
 
 

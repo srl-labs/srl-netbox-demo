@@ -282,4 +282,4 @@ DATETIME_FORMAT = 'N j, Y g:i a'
 SHORT_DATETIME_FORMAT = 'Y-m-d H:i'
 
 
-CSRF_TRUSTED_ORIGINS = ['https://localhost:8000']
+CSRF_TRUSTED_ORIGINS = ['https://localhost:8000', 'http://localhost:8000']

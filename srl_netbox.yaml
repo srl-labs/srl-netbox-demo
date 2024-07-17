@@ -171,19 +171,11 @@ topology:
         IGNORE_SSL_ERRORS: False
       #  https_proxy: http://10.158.100.1:8080
       entrypoint: ./nb-dt-import.py --vendors Nokia
-      healthcheck:
-        test: ["CMD-SHELL", "test $(curl -f -H 'Authorization: Token c4cd2e9bf74869feb061eba14b090b4811353d9c' http://netbox:8000/api/dcim/device-types/ | jq '.count') -ge 12"]
-        timeout: 10
-        retries: 10
       stages:
         create:
           wait-for:
             - node: netbox
               stage: healthy
-        healthy:
-         exec:
-           on-exit:
-            - sh -c "echo test"
 
   links:
     - endpoints: ["lab01-l1:e1-50", "lab01-s1:e1-1"]

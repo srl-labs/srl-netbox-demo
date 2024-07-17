@@ -82,7 +82,7 @@ After generating the intents, deploy them using the following Ansible playbook. 
 
 
 ```bash
-ansible-playbook -i inv -e intent_dir=/workspaces/srl-netbox-demo/ansible_intents --diff intent-based-ansible-lab/playbooks/cf_fabric.yml
+ansible-playbook -i inv -e intent_dir=/workspaces/srl-netbox-demo/intents/ansible_intents --diff intent-based-ansible-lab/playbooks/cf_fabric.yml
 ```
 
 Post-deployment, verify the fabric-wide configuration using `fcli` commands from the [nornir-srl](https://github.com/srl-labs/nornir-srl) repository. To facilitate these verifications, you can set up an alias for quick access:

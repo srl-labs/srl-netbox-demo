@@ -121,7 +121,7 @@ topology:
     netbox:
       # Netbox configuration with dependencies on postgres and redis
       kind: linux
-      image: lscr.io/linuxserver/netbox:3.6.9
+      image: lscr.io/linuxserver/netbox:latest
       env:
         PUID: 0
         PGID: 0

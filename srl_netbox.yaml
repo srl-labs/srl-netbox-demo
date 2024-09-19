@@ -159,7 +159,7 @@ topology:
         healthy:
          exec:
            on-exit:
-            - sh -c "echo \"from django.contrib.auth.models import User; from users.models import Token; User.objects.get(username='admin').tokens.create(key='c4cd2e9bf74869feb061eba14b090b4811353d9c')\" | /app/netbox/netbox/manage.py shell --interface python"
+            - sh -c "echo \"from users.models import User, Token; Token.objects.create(user=User.objects.get(username='admin'), key='c4cd2e9bf74869feb061eba14b090b4811353d9c')\" | /app/netbox/netbox/manage.py shell --interface python"
       binds:
         - config/configuration.py:/config/configuration.py
         - config/local_settings.py:/app/netbox/netbox/netbox/local_settings.py

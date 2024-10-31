@@ -1,6 +1,6 @@
 {
     "name": "Containerlab and Ansible Dev Environment",
-    "image": "ghcr.io/srl-labs/containerlab/clab-devcontainer:latest",
+    "image": "ghcr.io/srl-labs/containerlab/clab-devcontainer:0.58.0",
     "hostRequirements": {
         "cpus": 4,
         "memory": "16gb",

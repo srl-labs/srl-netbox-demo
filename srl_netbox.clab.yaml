@@ -166,8 +166,9 @@ topology:
         NETBOX_URL: http://netbox:8000
         NETBOX_TOKEN: c4cd2e9bf74869feb061eba14b090b4811353d9c
         IGNORE_SSL_ERRORS: False
+        VENDORS: Nokia
       #  https_proxy: http://10.158.100.1:8080
-      entrypoint: ./nb-dt-import.py --vendors Nokia
+      # entrypoint: ./nb-dt-import.py --vendors Nokia
       stages:
         create:
           wait-for:

@@ -1,4 +1,9 @@
-# srl_netbox-demo
+# SRLinux Netbox Demo with Ansible
+
+<div align=center>
+<a href="https://codespaces.new/srl-labs/srl-netbox-demo?quickstart=1">
+<img src="img/logo.png" style="width:100%"/></a>
+</div>
 
 This lab sets up a demo environment for Nokia SRL devices using Netbox 4.2.5. The deployment process initializes a virtual network topology using `containerlab` and provisions it using `Netbox` and `Ansible`. During the spin-up, Netbox is deployed, and Nokia device types are imported using the provided device library. For generating and deploying intents to the fabric, the project is using the playbooks from the [netbox_integration_example branch](https://github.com/srl-labs/intent-based-ansible-lab/tree/netbox_integration_example) of the `intent-based-ansible-lab` repository.
 
@@ -21,7 +26,8 @@ This lab sets up a demo environment for Nokia SRL devices using Netbox 4.2.5. Th
 ```bash
 git clone --recursive https://github.com/srl-labs/srl-netbox-demo
 ```
-**_NOTE:_**  Recursive is needed as the script_collection is sub-module
+> [!IMPORTANT]
+>  Recursive is needed as the intent-based-ansible-lab is  a sub-module
 
 ## Prerequisites
 
@@ -49,8 +55,11 @@ Initiate the virtual network topology using the provided YAML file (`srl_netbox.
 ```bash
 clab deploy -t srl_netbox.clab.yaml
 ```
-**_NOTE:_** This step will spin up all necessary containers, deploy Netbox, and start importing Nokia device types from the device library. The entire `clab deploy` process takes about 4-5 minutes. After that, the `netbox_importer` container will continue running for an additional minute to complete the import, becoming healthy once finished.
+> [!NOTE]
+> This step will spin up all necessary containers, deploy Netbox, and start importing Nokia device types from the device library. The entire `clab deploy` process takes about 4-5 minutes. After that, the `netbox_importer` container will continue running for an additional minute to complete the import, becoming healthy once finished.
 
+> [!TIP]
+> Watch the logs of the netbox container. `docker logs -f netbox`
 
 ### 2. Access your Netbox
 
@@ -68,12 +77,14 @@ Navigate to the scripts directory to execute the initialization scripts. These s
 1. **Import Infrastructure and Initial Settings:**
    - This api script initializes Netbox with custom fields and imports infrastructure intents from `intents/netbox_intents/lab01.yaml` and `lags-lab01.yaml`. It triggers an API call to `nokia-srl-netbox-scripts/2_Infrastructure.py`, which imports the fabric configuration from these YAML files.
 
+
    ```bash
    bash api_scripts/import_infra.sh
    ```
 2. **Import Services:**
 
    - This script imports service configurations from `intents/netbox_intents/l2vpns-lab01.yaml` and `intents/netbox_intents/l3vpns-lab01.yaml`. It makes an API call to `nokia-srl-netbox-scripts/3_Services.py`, processing these files to import VPN services into Netbox.
+  
 
    ```bash
    bash api_scripts/import_service.sh
@@ -103,6 +114,9 @@ Post-deployment, verify the fabric-wide configuration using `fcli` commands from
 ```bash
 CLAB_TOPO=srl_netbox.clab.yaml
 alias fcli="docker run -t --network $(grep '^name:' $CLAB_TOPO | awk '{print $2}') --rm -v /etc/hosts:/etc/hosts:ro -v ${PWD}/${CLAB_TOPO}:/topo.yml ghcr.io/srl-labs/nornir-srl:latest -t /topo.yml"
+
+# Example command to verify the fabric configuration
+fcli ni
 ```
 
 ## Troubleshooting 

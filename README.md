@@ -1,6 +1,6 @@
 # srl_netbox-demo
 
-This lab sets up a demo environment for Nokia SRL devices using Netbox. The deployment process initializes a virtual network topology using `containerlab` and provisions it using `Netbox` and `Ansible`. During the spin-up, Netbox is deployed, and Nokia device types are imported using the provided device library. For generating and deploying intents to the fabric, the project is using the playbooks from the [netbox_integration_example branch](https://github.com/srl-labs/intent-based-ansible-lab/tree/netbox_integration_example) of the `intent-based-ansible-lab` repository.
+This lab sets up a demo environment for Nokia SRL devices using Netbox 4.2.5. The deployment process initializes a virtual network topology using `containerlab` and provisions it using `Netbox` and `Ansible`. During the spin-up, Netbox is deployed, and Nokia device types are imported using the provided device library. For generating and deploying intents to the fabric, the project is using the playbooks from the [netbox_integration_example branch](https://github.com/srl-labs/intent-based-ansible-lab/tree/netbox_integration_example) of the `intent-based-ansible-lab` repository.
 
 
 ---
@@ -15,7 +15,7 @@ This lab sets up a demo environment for Nokia SRL devices using Netbox. The depl
 
 ---
 
-## Deployment Steps
+# Deployment Steps
 
 ## Clone the repo
 ```bash
@@ -26,6 +26,19 @@ git clone --recursive https://github.com/srl-labs/srl-netbox-demo
 ## Prerequisites
 
 Containerlab installed on your machine. For installation instructions, refer to the [official documentation](https://containerlab.srlinux.dev/install/).
+
+
+### Create and activate virtual environment
+```bash
+python -m venv venv
+source venv/bin/activate
+
+### Install requirements
+pip install -r requirements.txt
+
+### Install nokia.srlinux Ansible collection
+ansible-galaxy collection install nokia.srlinux
+```
 
 ### 1. Deploy the Topology:
 

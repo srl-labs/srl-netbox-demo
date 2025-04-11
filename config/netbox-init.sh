@@ -107,4 +107,98 @@ else
     fi
 fi
 
-echo "NetBox initialization completed."
+# Add scripts from the data source
+echo "Now adding scripts from the data source..."
+
+# Set variables for script addition
+TOKEN="c4cd2e9bf74869feb061eba14b090b4811353d9c"
+NETBOX_URL="http://localhost:8000"  # Use localhost since we're inside the container
+COOKIE_JAR=/tmp/netbox_cookies.txt
+
+# Fetch the data files from the API and filter for Python files only
+echo "Fetching and filtering Python script files..."
+DATA_FILES_JSON=$(curl -s \
+  -H "Authorization: Token $TOKEN" \
+  -H "Accept: application/json; indent=4" \
+  "$NETBOX_URL/api/core/data-files/?brief=true&limit=100&source_id=$DS_ID")
+
+# Extract Python file IDs using jq if available, or fallback to grep/sed
+if command -v jq &> /dev/null; then
+    echo "Using jq to parse JSON response..."
+    PYTHON_FILE_IDS=$(echo "$DATA_FILES_JSON" | jq -r '.results[] | select(.path | endswith(".py")) | .id')
+else
+    echo "jq not available, using grep/sed to parse JSON response..."
+    # This is a simple parser that may need adjustments based on the exact JSON format
+    PYTHON_FILE_IDS=$(echo "$DATA_FILES_JSON" | grep -o '"id": [0-9]*' | grep -v '"id": null' | cut -d' ' -f2 | tr '\n' ' ')
+    # Verify we have Python files
+    echo "Verifying Python files in response..."
+    PYTHON_PATHS=$(echo "$DATA_FILES_JSON" | grep -o '"path": "[^"]*\.py"' | wc -l)
+    if [ "$PYTHON_PATHS" -eq 0 ]; then
+        echo "Warning: No Python files found in the data source. Full response:"
+        echo "$DATA_FILES_JSON"
+        # Fallback to hard-coded IDs from your example if no Python files are detected
+        echo "Falling back to hard-coded IDs from example..."
+        PYTHON_FILE_IDS="4 5 2"
+    fi
+fi
+
+echo "Found Python file IDs: $PYTHON_FILE_IDS"
+
+# Step 1: First login to get a valid session
+echo "Logging into NetBox web interface..."
+curl -s -c $COOKIE_JAR -X GET "$NETBOX_URL/login/" > /tmp/login_page.html
+
+# Extract initial CSRF token from the login page
+INITIAL_CSRF=$(grep -o 'window.CSRF_TOKEN = "[^"]*"' /tmp/login_page.html | cut -d '"' -f 2)
+echo "Initial CSRF Token: $INITIAL_CSRF"
+
+# Perform the login
+curl -s -c $COOKIE_JAR -b $COOKIE_JAR -X POST "$NETBOX_URL/login/" \
+  -H "Referer: $NETBOX_URL/login/" \
+  -H "X-CSRFToken: $INITIAL_CSRF" \
+  -F "csrfmiddlewaretoken=$INITIAL_CSRF" \
+  -F "username=admin" \
+  -F "password=admin" \
+  -F "next=/extras/scripts/add/" \
+  --location
+
+# Add each Python script
+for SCRIPT_ID in $PYTHON_FILE_IDS; do
+    echo "Adding script with data_file ID: $SCRIPT_ID"
+
+    # Step 2: Get the form page to extract the fresh CSRF token
+    curl -s -c $COOKIE_JAR -b $COOKIE_JAR "$NETBOX_URL/extras/scripts/add/" > /tmp/form_page.html
+
+    # Extract CSRF token from the JavaScript in the response
+    CSRF_TOKEN=$(grep -o 'window.CSRF_TOKEN = "[^"]*"' /tmp/form_page.html | cut -d '"' -f 2)
+    echo "Form CSRF Token for script $SCRIPT_ID: $CSRF_TOKEN"
+
+    # Generate current timestamp for _init_time
+    INIT_TIME=$(date +%s.%N)
+
+    # Step 3: Submit the form for this script
+    SUBMIT_RESULT=$(curl -s -X POST "$NETBOX_URL/extras/scripts/add/" \
+      -b $COOKIE_JAR \
+      -H "Referer: $NETBOX_URL/extras/scripts/add/" \
+      -H "X-CSRFToken: $CSRF_TOKEN" \
+      -F "csrfmiddlewaretoken=$CSRF_TOKEN" \
+      -F "_init_time=$INIT_TIME" \
+      -F "upload_file=" \
+      -F "data_source=$DS_ID" \
+      -F "data_file=$SCRIPT_ID" \
+      -F "auto_sync_enabled=on" \
+      -F "_create=")
+
+    if [[ "$SUBMIT_RESULT" == *"success"* ]]; then
+        echo "Successfully added script with data_file ID: $SCRIPT_ID"
+    else
+        echo "Warning: May have failed to add script with data_file ID: $SCRIPT_ID"
+        # Uncomment to debug issues
+        # echo "Response: $SUBMIT_RESULT" > /tmp/script_${SCRIPT_ID}_response.html
+    fi
+
+    # Sleep briefly to prevent overwhelming the server
+    sleep 2
+done
+
+echo "NetBox initialization and script setup completed."

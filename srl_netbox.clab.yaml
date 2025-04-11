@@ -2,6 +2,7 @@ name: srl_netbox
 prefix: ""
 mgmt:
   ipv4-subnet: 172.30.21.0/24
+  network: srl_netbox
 
 topology:
   kinds:

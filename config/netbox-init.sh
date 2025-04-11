@@ -108,6 +108,7 @@ else
 fi
 
 # Add scripts from the data source
+sleep 10
 echo "Now adding scripts from the data source..."
 
 # Set variables for script addition

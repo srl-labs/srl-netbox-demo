@@ -53,6 +53,25 @@ REDIS = {
     }
 }
 
+# Add to your configuration.py
+DATASOURCE_PROVIDERS = {
+    'local': {
+        'NAME': 'local',
+        'BACKEND': 'netbox.datasources.providers.LocalStorage',
+    },
+}
+
+# Configure a data source for your scripts
+DATASOURCES = {
+    'scripts': {
+        'NAME': 'Local Scripts',
+        'PROVIDER': 'local',
+        'TYPE': 'scripts',
+        'PATH': '/app/netbox/netbox/scripts/',
+        'AUTO_SYNC': True,  # This is crucial - it will auto-sync your scripts
+    },
+}
+
 # This key is used for secure generation of random numbers and strings. It must never be exposed outside of this file.
 # For optimal security, SECRET_KEY should be at least 50 characters in length and contain a mix of letters, numbers, and
 # symbols. NetBox will not run without this defined. For more information, see
@@ -259,7 +278,7 @@ RQ_DEFAULT_TIMEOUT = 300
 
 # The file path where custom scripts will be stored. A trailing slash is not needed. Note that the default value of
 # this setting is derived from the installed location.
-SCRIPTS_ROOT = '/config/scripts'
+SCRIPTS_ROOT = '/app/netbox/netbox/scripts'
 
 # The name to use for the session cookie.
 SESSION_COOKIE_NAME = 'sessionid'

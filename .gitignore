@@ -6,7 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
-clab-lab01/
+.vscode/
+clab-srl_netbox/
 
 # Distribution / packaging
 .Python

@@ -1,8 +1,6 @@
-name: lab01
+name: srl_netbox
 prefix: ""
 mgmt:
-  network: lab01
-  bridge: lab01
   ipv4-subnet: 172.30.21.0/24
 
 topology:
@@ -18,55 +16,80 @@ topology:
       type: ixrd2
       mgmt-ipv4: 172.30.21.11
       labels:
-        graph-level: 2
+        graph-level: "1"
         graph-icon: switch
+        graph-posX: "525"
+        graph-posY: "265"
+        graph-group: Leaves
+        graph-groupLabelPos: top-center
 
     lab01-l2:
       kind: srl
       type: ixrd2
       mgmt-ipv4: 172.30.21.12
       labels:
-        graph-level: 2
+        graph-level: "1"
         graph-icon: switch
+        graph-posX: "585"
+        graph-posY: "265"
+        graph-group: Leaves
+        graph-groupLabelPos: top-center
 
     lab01-l3:
       kind: srl
       type: ixrd2
       mgmt-ipv4: 172.30.21.13
       labels:
-        graph-level: 2
+        graph-level: "1"
         graph-icon: switch
+        graph-posX: "635"
+        graph-posY: "265"
+        graph-group: Leaves
+        graph-groupLabelPos: top-center
 
     lab01-l4:
       kind: srl
       type: ixrd2
       mgmt-ipv4: 172.30.21.14
       labels:
-        graph-level: 2
+        graph-level: "1"
         graph-icon: switch
+        graph-posX: "685"
+        graph-posY: "265"
+        graph-group: Leaves
+        graph-groupLabelPos: top-center
 
     lab01-s1:
       kind: srl
       type: ixrd3l
       mgmt-ipv4: 172.30.21.101
       labels:
-        graph-level: 1
+        graph-level: "1"
         graph-icon: switch
+        graph-posX: "555"
+        graph-posY: "195"
+        graph-group: Spines
+        graph-groupLabelPos: top-center
 
     lab01-s2:
       kind: srl
       type: ixrd3l
       mgmt-ipv4: 172.30.21.102
       labels:
-        graph-level: 1
+        graph-level: "1"
         graph-icon: switch
+        graph-posX: "655"
+        graph-posY: "195"
+        graph-group: Spines
+        graph-groupLabelPos: top-center
 
     lab01-client1:
       kind: linux
       mgmt-ipv4: 172.30.21.133
       labels:
-        graph-level: 3 
-        graph-icon: host 
+        graph-posX: "545"
+        graph-posY: "335"
+        graph-groupLabelPos: bottom-center
       exec:
         - ip link add bond0 type bond mode 802.3ad
         - ip link set addr 00:c1:ab:00:01:21 dev bond0
@@ -84,8 +107,9 @@ topology:
       kind: linux
       mgmt-ipv4: 172.30.21.134
       labels:
-        graph-level: 3 
-        graph-icon: host 
+        graph-posX: "665"
+        graph-posY: "335"
+        graph-groupLabelPos: bottom-center
       exec:
         - ip link add bond0 type bond mode 802.3ad
         - ip link set addr 00:c1:ab:00:01:22 dev bond0
@@ -99,7 +123,7 @@ topology:
         - ip link set eth2 up
         - ip link set bond0 up
         - ip route add 10.20.1.0/24 via 10.20.2.254
-    
+
     ### Netbox ###
     # Configuration for PostgreSQL, Redis, and Netbox for network inventory management
     postgres:
@@ -109,15 +133,27 @@ topology:
         POSTGRES_DB: netbox
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
+      labels:
+        graph-posX: "775"
+        graph-posY: "215"
+        graph-group: Netbox
+        graph-level: "1"
+        graph-groupLabelPos: bottom-center
 
     redis:
       kind: linux
       image: docker.io/valkey/valkey:8.0-alpine
+      labels:
+        graph-posX: "815"
+        graph-posY: "215"
+        graph-group: Netbox
+        graph-level: "1"
+        graph-groupLabelPos: bottom-center
 
     netbox:
       # Netbox configuration with dependencies on postgres and redis
       kind: linux
-      image: lscr.io/linuxserver/netbox:4.2.6
+      image: lscr.io/linuxserver/netbox:4.2.5
       env:
         PUID: 0
         PGID: 0
@@ -128,7 +164,7 @@ topology:
         SUPERUSER_PASSWORD: admin
         SUPERUSER_API_TOKEN: c4cd2e9bf74869feb061eba14b090b4811353d9c
         ALLOWED_HOST: "*"
-        DEBUG: true
+        #        DEBUG: true
         DB_NAME: netbox
         DB_USER: postgres
         DB_PASSWORD: postgres
@@ -139,7 +175,7 @@ topology:
       ports:
         - 8000:8000
       healthcheck:
-        test: ["CMD-SHELL", "curl -f http://netbox:8000/api/ || exit 1"]
+        test: [ "CMD-SHELL", "curl -f http://netbox:8000/api/ || exit 1" ]
         timeout: 10
         retries: 100
       stages:
@@ -151,12 +187,18 @@ topology:
               stage: create
         healthy:
           exec:
-            - command: sh -c "echo \"from users.models import User; from users.models import Token; User.objects.get(username='admin').tokens.create(key='c4cd2e9bf74869feb061eba14b090b4811353d9c')\" | /app/netbox/netbox/manage.py shell --interface python"
+            - command: bash /config/netbox-init.sh
               target: container
               phase: on-exit
       binds:
         - config/configuration.py:/config/configuration.py
-        - nokia-srl-netbox-scripts:/config/scripts
+        - config/netbox-init.sh:/config/netbox-init.sh
+      labels:
+        graph-posX: "775"
+        graph-posY: "245"
+        graph-group: Netbox
+        graph-level: "1"
+        graph-groupLabelPos: bottom-center
 
     netbox_importer:
       kind: linux
@@ -167,23 +209,28 @@ topology:
         NETBOX_TOKEN: c4cd2e9bf74869feb061eba14b090b4811353d9c
         IGNORE_SSL_ERRORS: False
         VENDORS: Nokia
-      #  https_proxy: http://10.158.100.1:8080
-      # entrypoint: ./nb-dt-import.py --vendors Nokia
+      #  https_proxy: a-proxy
       stages:
         create:
           wait-for:
             - node: netbox
               stage: healthy
+      labels:
+        graph-posX: "815"
+        graph-posY: "245"
+        graph-group: Netbox
+        graph-level: "1"
+        graph-groupLabelPos: bottom-center
 
   links:
-    - endpoints: ["lab01-l1:e1-50", "lab01-s1:e1-1"]
-    - endpoints: ["lab01-l1:e1-49", "lab01-s2:e1-1"]
-    - endpoints: ["lab01-l2:e1-50", "lab01-s1:e1-2"]
-    - endpoints: ["lab01-l2:e1-49", "lab01-s2:e1-2"]
-    - endpoints: ["lab01-l3:e1-50", "lab01-s1:e1-3"]
-    - endpoints: ["lab01-l3:e1-49", "lab01-s2:e1-3"]
-    - endpoints: ["lab01-l4:e1-50", "lab01-s1:e1-4"]
-    - endpoints: ["lab01-l4:e1-49", "lab01-s2:e1-4"]
+    - endpoints: ["lab01-l1:e1-49", "lab01-s1:e1-1"]
+    - endpoints: ["lab01-l1:e1-50", "lab01-s2:e1-1"]
+    - endpoints: ["lab01-l2:e1-49", "lab01-s1:e1-2"]
+    - endpoints: ["lab01-l2:e1-50", "lab01-s2:e1-2"]
+    - endpoints: ["lab01-l3:e1-49", "lab01-s1:e1-3"]
+    - endpoints: ["lab01-l3:e1-50", "lab01-s2:e1-3"]
+    - endpoints: ["lab01-l4:e1-49", "lab01-s1:e1-4"]
+    - endpoints: ["lab01-l4:e1-50", "lab01-s2:e1-4"]
     - endpoints: ["lab01-client1:eth1", "lab01-l1:e1-1"]
     - endpoints: ["lab01-client1:eth2", "lab01-l2:e1-1"]
     - endpoints: ["lab01-client2:eth1", "lab01-l3:e1-1"]

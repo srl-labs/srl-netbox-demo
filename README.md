@@ -19,7 +19,7 @@ This lab sets up a demo environment for Nokia SRL devices using Netbox. The depl
 
 ## Clone the repo
 ```bash
-git clone --recursive https://github.com/FloSch62/srl-netbox-demo
+git clone --recursive https://github.com/srl-labs/srl-netbox-demo
 ```
 **_NOTE:_**  Recursive is needed as the script_collection is sub-module
 

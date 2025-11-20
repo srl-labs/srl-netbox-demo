@@ -91,7 +91,7 @@ topology:
     netbox:
       # Netbox configuration with dependencies on postgres and redis
       kind: linux
-      image: lscr.io/linuxserver/netbox:4.2.5
+      image: lscr.io/linuxserver/netbox:4.4.6
       env:
         PUID: "0"
         PGID: "0"
@@ -114,12 +114,7 @@ topology:
       healthcheck:
         test:
           - CMD-SHELL
-          - curl
-          - -f
-          - http://netbox:8000/api/
-          - "||"
-          - exit
-          - "1"
+          - curl -f http://netbox:8000/api/ || exit 1
         timeout: 10
         retries: 100
       stages:
@@ -153,17 +148,6 @@ topology:
           wait-for:
             - node: netbox
               stage: healthy
-      healthcheck:
-        test:
-          - CMD-SHELL
-          - curl
-          - -f
-          - http://netbox:8000/api/
-          - "||"
-          - exit
-          - "1"
-        timeout: 10
-        retries: 100
     redis:
       kind: linux
       image: docker.io/valkey/valkey:8.0-alpine

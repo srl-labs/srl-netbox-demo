@@ -63,7 +63,7 @@ All commands run from the repo root. Replace the NetBox URL step with the Codesp
     ```
     - Spins up NetBox and the SR Linux fabric; expect ~4–5 minutes.
     - Watch progress: `docker logs -f netbox`
-    - Wait until netbox_importer
+    - Wait until netbox_importer get healthy
 
 2. **Open NetBox**
     - Local: `http://127.0.0.1:8000` (user/pass `admin` / `admin`).

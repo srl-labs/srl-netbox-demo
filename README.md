@@ -5,7 +5,7 @@
 <img src="img/logo.png" style="width:100%"/></a>
 </div>
 
-This lab sets up a demo environment for Nokia SRL devices using Netbox 4.2.5. The deployment process initializes a virtual network topology using `containerlab` and provisions it using `Netbox` and `Ansible`. During the spin-up, Netbox is deployed, and Nokia device types are imported using the provided device library. For generating and deploying intents to the fabric, the project is using the playbooks from the [netbox_integration_example branch](https://github.com/srl-labs/intent-based-ansible-lab/tree/netbox_integration_example) of the `intent-based-ansible-lab` repository.
+This lab builds a demo fabric of Nokia SR Linux devices with NetBox 4.4.6 and Ansible. Containerlab spins up the topology, NetBox is populated with Nokia device types, and playbooks from the [netbox_integration_example branch](https://github.com/srl-labs/intent-based-ansible-lab/tree/netbox_integration_example) of `intent-based-ansible-lab` generate and deploy intents.
 
 
 ---
@@ -13,128 +13,97 @@ This lab sets up a demo environment for Nokia SRL devices using Netbox 4.2.5. Th
 <a href="https://codespaces.new/srl-labs/srl-netbox-demo?quickstart=1">
 <img src="https://gitlab.com/rdodin/pics/-/wikis/uploads/d78a6f9f6869b3ac3c286928dd52fa08/run_in_codespaces-v1.svg?sanitize=true" style="width:50%"/></a>
 
-**[Run](https://codespaces.new/srl-labs/intent-based-ansible-lab?quickstart=1) this lab in GitHub Codespaces for free**.  
+**[Run](https://codespaces.new/srl-labs/srl-netbox-demo?quickstart=1) this lab in GitHub Codespaces for free**.  
 [Learn more](https://containerlab.dev/manual/codespaces/) about Containerlab for Codespaces.
 
 </div>
 
 ---
 
-# Deployment Steps
+## Choose how to run
 
-## Clone the repo
-```bash
-git clone --recursive https://github.com/srl-labs/srl-netbox-demo
-```
-> [!IMPORTANT]
->  Recursive is needed as the intent-based-ansible-lab is  a sub-module
+- **Codespaces (fastest):** click the button above and wait for the devcontainer to finish. Everything below is run from the repo root inside Codespaces.
+- **Local machine:** follow the prerequisites and setup below, then run the same workflow.
 
-## Prerequisites
+## Local prerequisites
 
-Containerlab installed on your machine. For installation instructions, refer to the [official documentation](https://containerlab.srlinux.dev/install/).
+1) Containerlab installed. See the [official docs](https://containerlab.srlinux.dev/install/).
+2) Git, Docker, and uv.
 
 > [!TIP]
 > **Why uv?**
 > [uv](https://docs.astral.sh/uv) is a single, ultra-fast tool that can replace `pip`, `pipx`, `virtualenv`, `pip-tools`, `poetry`, and more. It automatically manages Python versions, handles ephemeral or persistent virtual environments (`uv venv`), lockfiles, and often runs **10–100× faster** than pip installs.
 
-1. **Install uv** (no Python needed):
+## Local setup
 
+```bash
+git clone --recursive https://github.com/srl-labs/srl-netbox-demo
+cd srl-netbox-demo
+
+# Install uv (Linux/macOS)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install the Nokia SR Linux Ansible collection
+uv run ansible-galaxy collection install nokia.srlinux
+```
+
+> [!IMPORTANT]
+> Use `--recursive` because `intent-based-ansible-lab` is a submodule.
+
+## Run book (Codespaces or local)
+
+All commands run from the repo root. Replace the NetBox URL step with the Codespaces forwarded port if you are in Codespaces.
+
+1. **Deploy the topology**
+
+    ![Drawio Example](/img/topo.png)
+
+    ```bash
+    clab deploy -t srl_netbox.clab.yaml
     ```
-    # On Linux and macOS
-    curl -LsSf https://astral.sh/uv/install.sh | sh
+    - Spins up NetBox and the SR Linux fabric; expect ~4–5 minutes.
+    - Watch progress: `docker logs -f netbox`
+    - Wait until netbox_importer
+
+2. **Open NetBox**
+    - Local: `http://127.0.0.1:8000` (user/pass `admin` / `admin`).
+    - Codespaces: open forwarded port 8000 in the Ports panel.
+
+3. **Initialize NetBox data**
+    ```bash
+    bash api_scripts/import_infra.sh      # imports device types, CFs, infrastructure intents
+    bash api_scripts/import_service.sh    # imports L2/L3 VPN services
     ```
 
-2. **Install ansible collection**:
+4. **Generate Ansible intents from NetBox**
+    ```bash
+    INTENT_DIR=$(pwd)/intents/generated_intents
+    uv run ansible-playbook -i inv/ -e intent_dir=$INTENT_DIR \
+      intent-based-ansible-lab/playbooks/netbox_generate_intents.yml --diff
+    ```
 
-      ```bash
-      uv run ansible-galaxy collection install nokia.srlinux
-      ```
+5. **Deploy the generated intents**
+    ```bash
+    uv run ansible-playbook -i inv -e intent_dir=$INTENT_DIR \
+      intent-based-ansible-lab/playbooks/cf_fabric.yml --diff
+    ```
 
-### 1. Deploy the Topology:
+6. **(Optional) Verify with fcli**
+    ```bash
+    CLAB_TOPO=srl_netbox.clab.yaml
+    alias fcli="docker run -t --network $(grep '^name:' $CLAB_TOPO | awk '{print $2}') --rm \
+      -v /etc/hosts:/etc/hosts:ro -v ${PWD}/${CLAB_TOPO}:/topo.yml \
+      ghcr.io/srl-labs/nornir-srl:latest -t /topo.yml"
 
-Initiate the virtual network topology using the provided YAML file (`srl_netbox.clab.yaml`):
+    fcli ni
+    ```
 
-![Drawio Example](/img/topo.png)
+7. **Tear down when done**
+    ```bash
+    clab destroy -t srl_netbox.clab.yaml
+    ```
 
-```bash
-clab deploy -t srl_netbox.clab.yaml
-```
-> [!NOTE]
-> This step will spin up all necessary containers, deploy Netbox, and start importing Nokia device types from the device library. The entire `clab deploy` process takes about 4-5 minutes. After that, the `netbox_importer` container will continue running for an additional minute to complete the import, becoming healthy once finished.
+## Troubleshooting
 
-> [!TIP]
-> Watch the logs of the netbox container. `docker logs -f netbox`
-
-### 2. Access your Netbox
-
-After ensuring all containers are running, you can access the Netbox GUI in two ways:
-- **Locally:** Navigate to `http://hostip:8000` using the credentials `admin:admin`.
-- **Via GitHub Codespaces:** If you are running this environment in GitHub Codespaces, the application URL will be provided in the Codespaces port forwarding section.
-
-Both methods will provide you with administrative access to manage and configure the network settings and devices.
-
-
-### 3. Initialize Netbox:
-
-Navigate to the scripts directory to execute the initialization scripts. These scripts will set up Netbox with necessary configurations and import data.
-
-1. **Import Infrastructure and Initial Settings:**
-   - This api script initializes Netbox with custom fields and imports infrastructure intents from `intents/netbox_intents/lab01.yaml` and `lags-lab01.yaml`. It triggers an API call to `nokia-srl-netbox-scripts/2_Infrastructure.py`, which imports the fabric configuration from these YAML files.
-
-
-   ```bash
-   bash api_scripts/import_infra.sh
-   ```
-2. **Import Services:**
-
-   - This script imports service configurations from `intents/netbox_intents/l2vpns-lab01.yaml` and `intents/netbox_intents/l3vpns-lab01.yaml`. It makes an API call to `nokia-srl-netbox-scripts/3_Services.py`, processing these files to import VPN services into Netbox.
-  
-
-   ```bash
-   bash api_scripts/import_service.sh
-   ```
-
-### 4. Generate Ansible intents from Netbox:
-
-Execute the Ansible playbook below to generate intents based on the data stored in Netbox.
-
-
-```bash
-uv run ansible-playbook -i inv/ -e intent_dir=/workspaces/srl-netbox-demo/intents/generated_intents intent-based-ansible-lab/playbooks/netbox_generate_intents.yml --diff
-```
-
-
-### 5. Deploy generated intents:
-
-After generating the intents, deploy them using the following Ansible playbook. This script applies the configuration intents to the fabric, setting up the network as specified in the intent files.
-
-
-```bash
-uv run ansible-playbook -i inv -e intent_dir=/workspaces/srl-netbox-demo/intents/generated_intents intent-based-ansible-lab/playbooks/cf_fabric.yml --diff
-```
-
-Post-deployment, verify the fabric-wide configuration using `fcli` commands from the [nornir-srl](https://github.com/srl-labs/nornir-srl) repository. To facilitate these verifications, you can set up an alias for quick access:
-
-```bash
-CLAB_TOPO=srl_netbox.clab.yaml
-alias fcli="docker run -t --network $(grep '^name:' $CLAB_TOPO | awk '{print $2}') --rm -v /etc/hosts:/etc/hosts:ro -v ${PWD}/${CLAB_TOPO}:/topo.yml ghcr.io/srl-labs/nornir-srl:latest -t /topo.yml"
-
-# Example command to verify the fabric configuration
-fcli ni
-```
-
-## Troubleshooting 
-
-### **_Important NOTE:_**  
-- The container lab initialization might take several minutes.
-- Ensure firewall and proxy settings, if any, permit the communication as per the given topology.
-
-During the deployment process, you might encounter a few hiccups. Here are some common issues and their solutions:
-
-### Monitoring Docker Logs for netbox
-
-If you want to monitor the deployment progress or diagnose any issues, you can check the logs of the netbox container:
-
-```bash
-docker logs -f netbox
-```
+- Containerlab bring-up can take several minutes; rerun `docker ps` and `docker logs -f netbox` to verify health.
+- Make sure firewall/proxy rules allow the container connectivity defined in the topology.

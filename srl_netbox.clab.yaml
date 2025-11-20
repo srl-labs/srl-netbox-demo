@@ -143,6 +143,15 @@ topology:
         IGNORE_SSL_ERRORS: "false"
         VENDORS: Nokia
       #  https_proxy: a-proxy
+      healthcheck:
+        test:
+          - CMD-SHELL
+          - >-
+            wget -qO- --header="Authorization: Token ${NETBOX_TOKEN}"
+            "${NETBOX_URL}/api/dcim/device-types/?limit=1" |
+            grep -Eq '"count" *: *(2[0-9]|[3-9][0-9]|[1-9][0-9]{2,})'
+        timeout: 10
+        retries: 100
       stages:
         create:
           wait-for:

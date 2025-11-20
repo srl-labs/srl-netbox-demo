@@ -43,10 +43,12 @@ Containerlab installed on your machine. For installation instructions, refer to 
     # On Linux and macOS
     curl -LsSf https://astral.sh/uv/install.sh | sh
     ```
-    
-```bash
-uv run ansible-galaxy collection install nokia.srlinux
-```
+
+2. **Install ansible collection**:
+
+      ```bash
+      uv run ansible-galaxy collection install nokia.srlinux
+      ```
 
 ### 1. Deploy the Topology:
 

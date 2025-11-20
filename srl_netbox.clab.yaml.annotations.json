@@ -1,0 +1,240 @@
+{
+  "freeTextAnnotations": [
+    {
+      "id": "freeText_1763634309928_1",
+      "text": "1. Deploy the lab: `clab deploy -t srl_netbox.clab.yaml` and wait for Netbox + importer to become healthy.  \n2. Access Netbox at `http://<host>:8000` (admin/admin) or via Codespaces port forwarding.  \n3. Initialize Netbox by running: `bash api_scripts/import_infra.sh` and `bash api_scripts/import_service.sh`.  \n4. Generate intents from Netbox using the Ansible playbook `netbox_generate_intents.yml`.  \n5. Deploy the generated intents with `cf_fabric.yml` to configure the fabric.  \n6. Verify the resulting configuration using `fcli` commands.",
+      "position": {
+        "x": 567,
+        "y": 315
+      },
+      "fontSize": 5,
+      "fontColor": "#ffffff",
+      "backgroundColor": "#000000",
+      "fontWeight": "normal",
+      "fontStyle": "normal",
+      "textDecoration": "none",
+      "fontFamily": "monospace",
+      "textAlign": "left",
+      "roundedBackground": true,
+      "width": 310,
+      "height": 90
+    }
+  ],
+  "groupStyleAnnotations": [
+    {
+      "id": "spines:1",
+      "backgroundColor": "#0008f5",
+      "backgroundOpacity": 40,
+      "borderColor": "#dddddd",
+      "borderWidth": 0,
+      "borderStyle": "solid",
+      "borderRadius": 4,
+      "color": "#ebecf0",
+      "labelPosition": "top-center"
+    },
+    {
+      "id": "Clients:1",
+      "backgroundColor": "#6200f5",
+      "backgroundOpacity": 40,
+      "borderColor": "#dddddd",
+      "borderWidth": 0,
+      "borderStyle": "solid",
+      "borderRadius": 4,
+      "color": "#ebecf0",
+      "labelPosition": "top-center"
+    },
+    {
+      "id": "Netbox:1",
+      "backgroundColor": "#00abf5",
+      "backgroundOpacity": 49,
+      "borderColor": "#dddddd",
+      "borderWidth": 0,
+      "borderStyle": "solid",
+      "borderRadius": 4,
+      "color": "#ebecf0",
+      "labelPosition": "top-center"
+    },
+    {
+      "id": "Leafs:1",
+      "backgroundColor": "#14db7e",
+      "backgroundOpacity": 40,
+      "borderColor": "#dddddd",
+      "borderWidth": 0,
+      "borderStyle": "solid",
+      "borderRadius": 4,
+      "color": "#ebecf0",
+      "labelPosition": "bottom-center"
+    }
+  ],
+  "cloudNodeAnnotations": [],
+  "nodeAnnotations": [
+    {
+      "id": "lab01-l1",
+      "icon": "router",
+      "position": {
+        "x": 203,
+        "y": 273
+      },
+      "geoCoordinates": {
+        "lat": 48.684826888402256,
+        "lng": 9.007895390625677
+      },
+      "group": "Leafs",
+      "level": "1"
+    },
+    {
+      "id": "lab01-l2",
+      "icon": "router",
+      "position": {
+        "x": 259,
+        "y": 273
+      },
+      "geoCoordinates": {
+        "lat": 48.684826888402256,
+        "lng": 9.007895390625677
+      },
+      "group": "Leafs",
+      "level": "1"
+    },
+    {
+      "id": "lab01-l3",
+      "icon": "router",
+      "position": {
+        "x": 315,
+        "y": 273
+      },
+      "geoCoordinates": {
+        "lat": 48.684826888402256,
+        "lng": 9.007895390625677
+      },
+      "group": "Leafs",
+      "level": "1"
+    },
+    {
+      "id": "lab01-l4",
+      "icon": "router",
+      "position": {
+        "x": 371,
+        "y": 273
+      },
+      "geoCoordinates": {
+        "lat": 48.684826888402256,
+        "lng": 9.007895390625677
+      },
+      "group": "Leafs",
+      "level": "1"
+    },
+    {
+      "id": "lab01-s1",
+      "icon": "router",
+      "position": {
+        "x": 259,
+        "y": 189
+      },
+      "geoCoordinates": {
+        "lat": 48.684826888402256,
+        "lng": 9.007895390625677
+      },
+      "group": "spines",
+      "level": "1"
+    },
+    {
+      "id": "lab01-s2",
+      "icon": "router",
+      "position": {
+        "x": 315,
+        "y": 189
+      },
+      "geoCoordinates": {
+        "lat": 48.684826888402256,
+        "lng": 9.007895390625677
+      },
+      "group": "spines",
+      "level": "1"
+    },
+    {
+      "id": "lab01-client1",
+      "icon": "client",
+      "position": {
+        "x": 231,
+        "y": 357
+      },
+      "geoCoordinates": {
+        "lat": 48.684826888402256,
+        "lng": 9.007895390625677
+      },
+      "group": "Clients",
+      "level": "1"
+    },
+    {
+      "id": "lab01-client2",
+      "icon": "client",
+      "position": {
+        "x": 343,
+        "y": 357
+      },
+      "geoCoordinates": {
+        "lat": 48.684826888402256,
+        "lng": 9.007895390625677
+      },
+      "group": "Clients",
+      "level": "1"
+    },
+    {
+      "id": "postgres",
+      "icon": "server",
+      "position": {
+        "x": 497,
+        "y": 189
+      },
+      "geoCoordinates": {
+        "lat": 48.684826888402256,
+        "lng": 9.007895390625677
+      },
+      "group": "Netbox",
+      "level": "1"
+    },
+    {
+      "id": "netbox",
+      "icon": "server",
+      "position": {
+        "x": 455,
+        "y": 217
+      },
+      "geoCoordinates": {
+        "lat": 48.684826888402256,
+        "lng": 9.007895390625677
+      },
+      "group": "Netbox",
+      "level": "1"
+    },
+    {
+      "id": "netbox_importer",
+      "icon": "server",
+      "position": {
+        "x": 497,
+        "y": 217
+      },
+      "geoCoordinates": {
+        "lat": 48.684826888402256,
+        "lng": 9.007895390625677
+      },
+      "group": "Netbox",
+      "level": "1"
+    },
+    {
+      "id": "redis",
+      "icon": "server",
+      "position": {
+        "x": 455,
+        "y": 189
+      },
+      "geoCoordinates": {
+        "lat": 48.684826888402256,
+        "lng": 9.007895390625677
+      },
+      "group": "Netbox",
+      "level": "1"
+    }
+  ]
+}

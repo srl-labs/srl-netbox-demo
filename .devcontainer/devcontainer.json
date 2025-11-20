@@ -16,5 +16,5 @@
             ]
         }
     },
-    "onCreateCommand": "sudo apt-get update && sudo apt-get install --no-install-recommends  -y python3 python3-pip git && pip3 install --upgrade pip && pip3 install -r requirements.txt && ansible-galaxy collection install nokia.srlinux && git submodule update --init --recursive"
+    "onCreateCommand": "set -euo pipefail; sudo apt-get update; sudo apt-get install --no-install-recommends -y curl ca-certificates git; curl -LsSf https://astral.sh/uv/install.sh | sh; export PATH=\"$HOME/.local/bin:$PATH\"; uv sync; uv run ansible-galaxy collection install nokia.srlinux; git submodule update --init --recursive"
 }

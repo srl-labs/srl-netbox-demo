@@ -7,39 +7,39 @@ mgmt:
 topology:
   kinds:
     nokia_srlinux:
-      image: ghcr.io/nokia/nokia_srlinuxinux:24.3.2
+      image: ghcr.io/nokia/srlinux:24.3.2
     linux:
       image: ghcr.io/hellt/network-multitool
 
   nodes:
     lab01-l1:
       kind: nokia_srlinux
-      type: ixrd2
+      type: ixr-d2
       mgmt-ipv4: 172.30.21.11
 
     lab01-l2:
       kind: nokia_srlinux
-      type: ixrd2
+      type: ixr-d2
       mgmt-ipv4: 172.30.21.12
 
     lab01-l3:
       kind: nokia_srlinux
-      type: ixrd2
+      type: ixr-d2
       mgmt-ipv4: 172.30.21.13
 
     lab01-l4:
       kind: nokia_srlinux
-      type: ixrd2
+      type: ixr-d2
       mgmt-ipv4: 172.30.21.14
 
     lab01-s1:
       kind: nokia_srlinux
-      type: ixrd3l
+      type: ixr-d3l
       mgmt-ipv4: 172.30.21.101
 
     lab01-s2:
       kind: nokia_srlinux
-      type: ixrd3l
+      type: ixr-d3l
       mgmt-ipv4: 172.30.21.102
 
     lab01-client1:
@@ -169,15 +169,15 @@ topology:
       image: docker.io/valkey/valkey:8.0-alpine
 
   links:
-    - endpoints: [ "lab01-l1:e1-49", "lab01-s1:e1-1" ]
-    - endpoints: [ "lab01-l1:e1-50", "lab01-s2:e1-1" ]
-    - endpoints: [ "lab01-l2:e1-49", "lab01-s1:e1-2" ]
-    - endpoints: [ "lab01-l2:e1-50", "lab01-s2:e1-2" ]
-    - endpoints: [ "lab01-l3:e1-49", "lab01-s1:e1-3" ]
-    - endpoints: [ "lab01-l3:e1-50", "lab01-s2:e1-3" ]
-    - endpoints: [ "lab01-l4:e1-49", "lab01-s1:e1-4" ]
-    - endpoints: [ "lab01-l4:e1-50", "lab01-s2:e1-4" ]
-    - endpoints: [ "lab01-client1:eth1", "lab01-l1:e1-1" ]
-    - endpoints: [ "lab01-client1:eth2", "lab01-l2:e1-1" ]
-    - endpoints: [ "lab01-client2:eth1", "lab01-l3:e1-1" ]
-    - endpoints: [ "lab01-client2:eth2", "lab01-l4:e1-1" ]
+    - endpoints: ["lab01-l1:e1-49", "lab01-s1:e1-1"]
+    - endpoints: ["lab01-l1:e1-50", "lab01-s2:e1-1"]
+    - endpoints: ["lab01-l2:e1-49", "lab01-s1:e1-2"]
+    - endpoints: ["lab01-l2:e1-50", "lab01-s2:e1-2"]
+    - endpoints: ["lab01-l3:e1-49", "lab01-s1:e1-3"]
+    - endpoints: ["lab01-l3:e1-50", "lab01-s2:e1-3"]
+    - endpoints: ["lab01-l4:e1-49", "lab01-s1:e1-4"]
+    - endpoints: ["lab01-l4:e1-50", "lab01-s2:e1-4"]
+    - endpoints: ["lab01-client1:eth1", "lab01-l1:e1-1"]
+    - endpoints: ["lab01-client1:eth2", "lab01-l2:e1-1"]
+    - endpoints: ["lab01-client2:eth1", "lab01-l3:e1-1"]
+    - endpoints: ["lab01-client2:eth2", "lab01-l4:e1-1"]

@@ -33,17 +33,19 @@ git clone --recursive https://github.com/srl-labs/srl-netbox-demo
 
 Containerlab installed on your machine. For installation instructions, refer to the [official documentation](https://containerlab.srlinux.dev/install/).
 
+> [!TIP]
+> **Why uv?**
+> [uv](https://docs.astral.sh/uv) is a single, ultra-fast tool that can replace `pip`, `pipx`, `virtualenv`, `pip-tools`, `poetry`, and more. It automatically manages Python versions, handles ephemeral or persistent virtual environments (`uv venv`), lockfiles, and often runs **10–100× faster** than pip installs.
 
-### Create and activate virtual environment
+1. **Install uv** (no Python needed):
+
+    ```
+    # On Linux and macOS
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    ```
+    
 ```bash
-python -m venv venv
-source venv/bin/activate
-
-### Install requirements
-pip install -r requirements.txt
-
-### Install nokia.srlinux Ansible collection
-ansible-galaxy collection install nokia.srlinux
+uv run ansible-galaxy collection install nokia.srlinux
 ```
 
 ### 1. Deploy the Topology:
@@ -96,7 +98,7 @@ Execute the Ansible playbook below to generate intents based on the data stored 
 
 
 ```bash
-ansible-playbook -i inv/ -e intent_dir=/workspaces/srl-netbox-demo/intents/generated_intents intent-based-ansible-lab/playbooks/netbox_generate_intents.yml --diff 
+uv run ansible-playbook -i inv/ -e intent_dir=/workspaces/srl-netbox-demo/intents/generated_intents intent-based-ansible-lab/playbooks/netbox_generate_intents.yml --diff
 ```
 
 
@@ -106,7 +108,7 @@ After generating the intents, deploy them using the following Ansible playbook. 
 
 
 ```bash
-ansible-playbook -i inv -e intent_dir=/workspaces/srl-netbox-demo/intents/generated_intents intent-based-ansible-lab/playbooks/cf_fabric.yml --diff
+uv run ansible-playbook -i inv -e intent_dir=/workspaces/srl-netbox-demo/intents/generated_intents intent-based-ansible-lab/playbooks/cf_fabric.yml --diff
 ```
 
 Post-deployment, verify the fabric-wide configuration using `fcli` commands from the [nornir-srl](https://github.com/srl-labs/nornir-srl) repository. To facilitate these verifications, you can set up an alias for quick access:

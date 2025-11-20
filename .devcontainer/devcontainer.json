@@ -2,7 +2,7 @@
     "name": "Containerlab and Ansible Dev Environment",
     "image": "ghcr.io/srl-labs/containerlab/devcontainer-dind-slim:latest",
     "hostRequirements": {
-        "cpus": 4,
+        "cpus": 6,
         "memory": "16gb",
         "storage": "32gb"
     },
@@ -16,5 +16,5 @@
             ]
         }
     },
-    "onCreateCommand": "bash -lc 'set -euo pipefail; sudo apt-get update; sudo apt-get install --no-install-recommends -y curl ca-certificates git; curl -LsSf https://astral.sh/uv/install.sh | sh; export PATH=\"$HOME/.local/bin:$PATH\"; uv sync; uv run ansible-galaxy collection install nokia.srlinux; git submodule update --init --recursive'"
+    "onCreateCommand": "bash -lc 'set -euo pipefail; sudo apt-get update; sudo apt-get install --no-install-recommends -y curl ca-certificates git; curl -LsSf https://astral.sh/uv/install.sh | sh; export PATH=\"$HOME/.local/bin:$PATH\"; uv sync; uv run ansible-galaxy collection install nokia.srlinux; uv run ansible-galaxy collection install netbox.netbox --force; git submodule update --init --recursive'"
 }

@@ -22,7 +22,7 @@ This lab builds a demo fabric of Nokia SR Linux devices with NetBox 4.4.6 and An
 
 ## Choose how to run
 
-- **Codespaces (fastest):** click the button above and wait for the devcontainer to finish. Everything below is run from the repo root inside Codespaces.
+- **Codespaces:** click the button above and wait for the devcontainer to finish. Everything below is run from the repo root inside Codespaces.
 - **Local machine:** follow the prerequisites and setup below, then run the same workflow.
 
 ## Local prerequisites
